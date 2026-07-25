@@ -168,6 +168,7 @@ def mark_attendance():
         branch = request.form.get('branch')
         subject = request.form.get('subject')
         
+        # Ekdum exact live current timestamp second ke sath record karne ke liye
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
