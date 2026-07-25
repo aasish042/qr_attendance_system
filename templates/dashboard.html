@@ -4,56 +4,91 @@
     <meta charset="UTF-8">
     <title>Professional Admin Dashboard</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1517694712202-14dd9538aa97?q=80&w=1920&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+        }
+    </style>
     <script>
-        // 2 Minutes (120 seconds) ka timer jo QR code ko refresh karega aur invalid karega
         let timeLeft = 120;
         function updateTimer() {
             let minutes = Math.floor(timeLeft / 60);
             let seconds = timeLeft % 60;
             document.getElementById("timer").innerHTML = `${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
-            
             if (timeLeft <= 0) {
-                // Page refresh hone par naya QR code generate ho jayega (Purana expire)
                 location.reload(); 
             } else {
                 timeLeft--;
             }
         }
         setInterval(updateTimer, 1000);
+
+        function shareToGroup() {
+            let attendanceUrl = "{{ target_url }}";
+            let message = "📢 *Class Attendance Open* 📢\nKripya niche diye gaye link par click karke apni attendance darj karein:\n" + attendanceUrl + "\n⏱️ Yeh link 2 minute ke liye valid hai!";
+            let whatsappUrl = "https://api.whatsapp.com/send?text=" + encodeURIComponent(message);
+            window.open(whatsappUrl, '_blank');
+        }
+
+        function copyLink() {
+            let attendanceUrl = "{{ target_url }}";
+            navigator.clipboard.writeText(attendanceUrl);
+            alert("Attendance Link Copied Successfully!");
+        }
     </script>
 </head>
-<body class="bg-secondary bg-opacity-15">
-    <nav class="navbar navbar-dark bg-dark px-4 shadow-sm">
-        <span class="navbar-brand mb-0 h1 fw-bold">⚡ Smart QR Attendance Dashboard</span>
+<body>
+    <nav class="navbar navbar-dark bg-dark px-4 shadow-lg bg-opacity-75">
+        <span class="navbar-brand mb-0 h1 fw-bold"><i class="fa-solid fa-qrcode text-warning"></i> Smart QR Attendance System</span>
         <div>
-            <a href="/download-report" class="btn btn-success btn-sm fw-semibold me-2">📥 Download Excel/CSV</a>
-            <a href="/logout" class="btn btn-danger btn-sm fw-semibold">Logout</a>
+            <a href="/download-report" class="btn btn-success btn-sm fw-semibold me-2 shadow-sm"><i class="fa-solid fa-file-excel"></i> Download Excel</a>
+            <a href="/logout" class="btn btn-danger btn-sm fw-semibold shadow-sm"><i class="fa-solid fa-right-from-bracket"></i> Logout</a>
         </div>
     </nav>
 
-    <div class="container my-4">
+    <div class="container my-5">
         <div class="row g-4">
-            <!-- QR Code Card with Timer -->
+            <!-- QR Code Card -->
             <div class="col-lg-4">
-                <div class="card border-0 shadow-lg rounded-4 text-center p-4 bg-white">
-                    <h5 class="fw-bold text-dark mb-2">Live Dynamic QR</h5>
+                <div class="card border-0 shadow-lg rounded-4 text-center p-4 bg-white bg-opacity-95">
+                    <h5 class="fw-bold text-dark mb-1">Live Dynamic QR</h5>
                     <p class="text-muted small">Scan via Mobile Camera</p>
-                    <div class="my-2">
-                        <img src="{{ url_for('static', filename='qr_code.png') }}?v={{ range(100, 999) | random }}" alt="QR Code" class="img-fluid border p-2 rounded-3 shadow-sm" style="width: 220px; height: 220px;">
+                    
+                    <div class="my-2 d-flex justify-content-center">
+                        {% if qr_b64 %}
+                        <img src="data:image/png;base64,{{ qr_b64 }}" alt="QR Code" class="img-fluid border p-2 rounded-3 shadow-sm bg-white" style="width: 200px; height: 200px;">
+                        {% else %}
+                        <p class="text-danger">Generating QR...</p>
+                        {% endif %}
                     </div>
-                    <div class="alert alert-warning py-1 mt-2 mb-0 small fw-bold">
+
+                    <div class="alert alert-warning py-1 mt-2 mb-3 small fw-bold">
                         ⏳ QR Expires in: <span id="timer" class="text-danger">2:00</span>
                     </div>
-                    <p class="text-muted mt-3 mb-0" style="font-size: 11px;">Note: QR refreshes every 2 minutes to prevent proxy attendance.</p>
+
+                    <!-- Share Buttons -->
+                    <div class="d-grid gap-2">
+                        <button onclick="shareToGroup()" class="btn btn-success btn-sm fw-bold shadow-sm">
+                            <i class="fa-brands fa-whatsapp"></i> Share on WhatsApp Group
+                        </button>
+                        <button onclick="copyLink()" class="btn btn-outline-secondary btn-sm fw-bold">
+                            <i class="fa-solid fa-copy"></i> Copy Attendance Link
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Live Records Table -->
             <div class="col-lg-8">
-                <div class="card border-0 shadow-lg rounded-4 p-4 bg-white">
+                <div class="card border-0 shadow-lg rounded-4 p-4 bg-white bg-opacity-95">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold text-dark m-0">📊 Live Attendance Records</h5>
-                        <button onclick="location.reload()" class="btn btn-outline-primary btn-sm">🔄 Refresh Table</button>
+                        <h5 class="fw-bold text-dark m-0"><i class="fa-solid fa-table text-primary"></i> Live Records</h5>
+                        <button onclick="location.reload()" class="btn btn-outline-primary btn-sm"><i class="fa-solid fa-rotate"></i> Refresh</button>
                     </div>
                     <div class="table-responsive" style="max-height: 400px;">
                         <table class="table table-hover align-middle text-center small">
