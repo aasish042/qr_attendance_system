@@ -35,7 +35,7 @@
     </style>
 </head>
 <body class="d-flex align-items-center justify-content-center min-vh-100 p-3">
-    <div class="card shadow-lg p-4 p-sm-4 border-0 rounded-4 w-100" style="max-width: 420px;">
+    <div class="card shadow-lg p-4 p-sm-4 border-0 rounded-4 w-100" style="max-width: 420px;" id="main-container">
         <div class="text-center mb-3">
             <div class="mb-2 text-success fs-2">
                 <i class="fa-solid fa-user-check"></i>
@@ -66,5 +66,20 @@
             <button type="submit" class="btn btn-success w-100 py-2.5 fw-bold rounded-pill shadow-sm">Submit Attendance</button>
         </form>
     </div>
+
+    <!-- Device Limit Check Script -->
+    <script>
+        window.addEventListener('DOMContentLoaded', (event) => {
+            let count = localStorage.getItem('device_attendance_count') || 0;
+            if (parseInt(count) >= 2) {
+                document.getElementById('main-container').innerHTML = `
+                    <div style='text-align:center; padding: 20px;'>
+                        <h2 style='color:#dc2626; font-size: 22px; font-weight: bold; margin-bottom: 15px;'>❌ Limit Exceeded!</h2>
+                        <p style='color:#4b5563; font-size: 15px; line-height: 1.5;'>Is device (phone) se pehle hi 2 students ki attendance darj ki ja chuki hai. Aap is phone se aur attendance nahi laga sakte.</p>
+                    </div>
+                `;
+            }
+        });
+    </script>
 </body>
 </html>
