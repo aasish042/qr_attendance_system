@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Dashboard</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: Arial, sans-serif; background: #f8f9fa; margin: 0; padding: 20px; }
+        .container { max-width: 900px; margin: auto; background: white; padding: 25px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #eee; padding-bottom: 15px; }
+        .btn { background: #dc3545; color: white; padding: 8px 15px; text-decoration: none; border-radius: 4px; font-size: 14px; }
+        .btn-success { background: #28a745; margin-right: 10px; }
+        .dashboard-content { display: flex; gap: 30px; margin-top: 20px; flex-wrap: wrap; }
+        .qr-section { flex: 1; text-align: center; background: #fdfdfd; padding: 15px; border: 1px solid #ddd; border-radius: 6px; }
+        .qr-section img { width: 200px; height: 200px; border: 1px solid #ccc; padding: 5px; background: white; }
+        .table-section { flex: 2; overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; font-size: 14px; }
+        th { background: #007BFF; color: white; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Attendance Dashboard</h2>
+            <div>
+                <a href="/download-report" class="btn btn-success">Download Excel/CSV</a>
+                <a href="/logout" class="btn">Logout</a>
+            </div>
+        </div>
+
+        <div class="dashboard-content">
+            <div class="qr-section">
+                <h3>Scan for Attendance</h3>
+                <img src="/static/qr_code.png" alt="QR Code">
+                <p style="font-size: 13px; color: #666;">Is QR code ko group par share karein.</p>
+            </div>
+
+            <div class="table-section">
+                <h3>Live Attendance Records</h3>
+                <table>
+                    <tr>
+                        {% for col in records[0] %}
+                        <th>{{ col }}</th>
+                        {% endfor %}
+                    </tr>
+                    {% for row in records[1:] %}
+                    <tr>
+                        {% for cell in row %}
+                        <td>{{ cell }}</td>
+                        {% endfor %}
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
