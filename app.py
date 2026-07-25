@@ -18,6 +18,11 @@ def init_csv():
 
 init_csv()
 
+# Root URL ko direct Admin Login par redirect karne ke liye (404 error fix)
+@app.route('/')
+def home():
+    return redirect(url_for('admin_login'))
+
 # 1. Admin Login Route
 @app.route('/admin-login', methods=['GET', 'POST'])
 def admin_login():
@@ -25,7 +30,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        # Default Admin Credentials (Aap ise change kar sakte hain)
+        # Default Admin Credentials
         if username == 'admin' and password == 'admin123':
             session['logged_in'] = True
             return redirect(url_for('admin_dashboard'))
@@ -43,8 +48,9 @@ def admin_dashboard():
     if not os.path.exists('static'):
         os.makedirs('static')
 
-    # Student form ka link (Apna PC ka local IP ya domain yahan daalein)
-    target_url = "http://127.0.0.1:5000/mark"
+    # Render ya local host ke hisab se automatic URL detect karna
+    host_url = request.host_url.rstrip('/')
+    target_url = f"{host_url}/mark"
     
     # QR Code Generate karke save karna
     img = qrcode.make(target_url)
@@ -80,7 +86,7 @@ def mark_attendance():
         name = request.form.get('name')
         roll = request.form.get('roll')
         branch = request.form.get('branch')
-        subject = request.form.get('subject')  # Subject yahan capture ho raha hai
+        subject = request.form.get('subject')  # Subject capture ho raha hai
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         # CSV mein data save karna (Subject ke sath)
