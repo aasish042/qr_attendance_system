@@ -4,12 +4,19 @@ import io
 import base64
 import csv
 import os
+import time
 from datetime import datetime
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_professional_key'
 
 CSV_FILE = 'attendance.csv'
+
+# Session / Token storage for QR Expiry (2 Minutes = 120 seconds) - UPDATED
+active_session = {
+    "token": None,
+    "expires_at": 0
+}
 
 def init_csv():
     if not os.path.isfile(CSV_FILE):
@@ -45,9 +52,16 @@ def admin_dashboard():
     target_url = ""
     try:
         host_url = request.host_url.rstrip('/')
-        target_url = f"{host_url}/mark"
         
-        # QR code ko memory mein generate karke Base64 string banana (No static folder dependency)
+        # Unique token aur 2 minute (120 seconds) ki expiry set karna - UPDATED
+        token = str(int(time.time()))
+        active_session["token"] = token
+        active_session["expires_at"] = time.time() + 120  # 2 minutes valid
+        
+        # Link mein token pass hoga
+        target_url = f"{host_url}/mark?token={token}"
+        
+        # QR code ko memory mein generate karke Base64 string banana
         img = qrcode.make(target_url)
         buffered = io.BytesIO()
         img.save(buffered, format="PNG")
@@ -81,6 +95,17 @@ def logout():
 
 @app.route('/mark', methods=['GET', 'POST'])
 def mark_attendance():
+    # Token check for expiry validation - UPDATED
+    token = request.args.get('token') or request.form.get('token')
+    current_time = time.time()
+    if not token or token != active_session["token"] or current_time > active_session["expires_at"]:
+        return """
+        <div style='text-align:center; margin-top:20vh; font-family:sans-serif;'>
+            <h2 style='color:red;'>❌ Attendance Link Expired!</h2>
+            <p>Yeh QR code ya link expire ho chuka hai (2 minutes limit exceeded). Kripya naya QR scan karein.</p>
+        </div>
+        """, 403
+
     if request.method == 'POST':
         name = request.form.get('name')
         roll = request.form.get('roll')
@@ -97,7 +122,7 @@ def mark_attendance():
             
         return render_template('success.html')
     
-    return render_template('attendance.html')
+    return render_template('attendance.html', token=token)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
