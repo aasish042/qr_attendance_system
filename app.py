@@ -6,11 +6,16 @@ import csv
 import os
 import time
 from datetime import datetime
+from reportlab.lib.pagesizes import letter
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from reportlab.lib import colors
 
 app = Flask(__name__)
 app.secret_key = 'super_secret_professional_key'
 
 CSV_FILE = 'attendance.csv'
+PDF_FILE = 'attendance_report.pdf'
 
 # Session / Token storage for QR Expiry (2 Minutes = 120 seconds) - UPDATED
 active_session = {
@@ -87,6 +92,65 @@ def download_report():
     if os.path.isfile(CSV_FILE):
         return send_file(CSV_FILE, as_attachment=True)
     return "No records found!", 404
+
+# NEW: PDF Report Download Route added without changing any existing lines
+@app.route('/download-pdf')
+def download_pdf():
+    if not session.get('logged_in'):
+        return redirect(url_for('admin_login'))
+    
+    if not os.path.isfile(CSV_FILE):
+        return "No records found!", 404
+        
+    try:
+        data = []
+        with open(CSV_FILE, mode='r', encoding='utf-8') as f:
+            reader = csv.reader(f)
+            data = list(reader)
+            
+        if not data:
+            return "No records found!", 404
+
+        # Generate PDF using ReportLab
+        doc = SimpleDocTemplate(PDF_FILE, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
+        elements = []
+        
+        styles = getSampleStyleSheet()
+        title_style = ParagraphStyle(
+            'ReportTitle',
+            parent=styles['Heading1'],
+            fontSize=18,
+            textColor=colors.HexColor('#0f172a'),
+            alignment=1,
+            spaceAfter=20
+        )
+        
+        elements.append(Paragraph("Smart QR Attendance Report", title_style))
+        elements.append(Spacer(1, 10))
+        
+        # Format table data for ReportLab
+        table_data = []
+        for row in data:
+            table_data.append([Paragraph(cell, styles['Normal']) for cell in row])
+            
+        t = Table(table_data, colWidths=[110, 110, 95, 90, 135])
+        t.setStyle(TableStyle([
+            ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#1e293b')),
+            ('TEXTCOLOR', (0, 0), (-1, 0), colors.whitesmoke),
+            ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+            ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+            ('BOTTOMPADDING', (0, 0), (-1, 0), 8),
+            ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#f8fafc')),
+            ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#cbd5e1')),
+            ('ROWBACKGROUNDS', (0, 1), (-1, -1), [colors.white, colors.HexColor('#f1f5f9')]),
+        ]))
+        
+        elements.append(t)
+        doc.build(elements)
+        
+        return send_file(PDF_FILE, as_attachment=True)
+    except Exception as e:
+        return f"PDF Generation Error: {e}", 500
 
 @app.route('/logout')
 def logout():
