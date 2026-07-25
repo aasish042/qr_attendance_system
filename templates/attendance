@@ -27,6 +27,10 @@
             <label>Branch / Class:</label>
             <input type="text" name="branch" required>
             
+            <!-- Naya Subject Field -->
+            <label>Subject:</label>
+            <input type="text" name="subject" required>
+            
             <button type="submit">Submit Attendance</button>
         </form>
     </div>
