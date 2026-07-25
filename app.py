@@ -175,6 +175,8 @@ def mark_attendance():
         roll = request.form.get('roll')
         branch = request.form.get('branch')
         subject = request.form.get('subject')
+        
+        # Accurate Live Local Timestamp capturing
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
