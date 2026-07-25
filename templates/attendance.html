@@ -73,9 +73,12 @@
             let count = localStorage.getItem('device_attendance_count') || 0;
             if (parseInt(count) >= 2) {
                 document.getElementById('main-container').innerHTML = `
-                    <div style='text-align:center; padding: 20px;'>
-                        <h2 style='color:#dc2626; font-size: 22px; font-weight: bold; margin-bottom: 15px;'>❌ Limit Exceeded!</h2>
-                        <p style='color:#4b5563; font-size: 15px; line-height: 1.5;'>Is device (phone) se pehle hi 2 students ki attendance darj ki ja chuki hai. Aap is phone se aur attendance nahi laga sakte.</p>
+                    <div class="text-center py-4">
+                        <div class="mb-3 text-danger fs-1">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <h4 class="fw-bold text-dark mb-2">Device Limit Reached</h4>
+                        <p class="text-muted small px-2">Maximum attendance limit (2 submissions) has already been reached for this device.</p>
                     </div>
                 `;
             }
