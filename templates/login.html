@@ -2,53 +2,66 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Portal - Secure Login</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* Luxury Background Photo with Dark Gradient Overlay */
         body {
-            background: linear-gradient(rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.75)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop');
+            background: linear-gradient(rgba(10, 15, 30, 0.8), rgba(15, 23, 42, 0.85)), url('https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=1920&auto=format&fit=crop');
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
             min-height: 100vh;
         }
-        /* Glassmorphism Luxury Card Effect */
+        /* Glassmorphism Luxury Card Effect with Mobile Optimization */
         .card {
-            background: rgba(255, 255, 255, 0.92) !important;
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4) !important;
+            background: rgba(255, 255, 255, 0.95) !important;
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5) !important;
+            transition: all 0.3s ease-in-out;
         }
         .form-control:focus {
             box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
             border-color: #0d6efd;
         }
+        /* Extra Luxury Glow for Button */
+        .btn-primary {
+            background: linear-gradient(135deg, #0d6efd 0%, #0043a8 100%);
+            border: none;
+            transition: transform 0.2s;
+        }
+        .btn-primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 15px rgba(13, 110, 253, 0.4);
+        }
     </style>
 </head>
-<body class="d-flex align-items-center justify-content-center vh-100">
-    <div class="card shadow-lg p-4 border-0 rounded-4" style="width: 380px;">
+<body class="d-flex align-items-center justify-content-center min-vh-100 p-3">
+    <div class="card shadow-lg p-4 p-sm-5 border-0 rounded-4 w-100" style="max-width: 420px;">
         <div class="text-center mb-4">
-            <div class="mb-2 text-primary fs-2">
+            <div class="mb-2 text-primary fs-1">
                 <i class="fa-solid fa-shield-halved"></i>
             </div>
-            <h3 class="fw-bold text-primary">Admin Portal</h3>
+            <h3 class="fw-bold text-dark">Admin Portal</h3>
             <p class="text-muted small">QR Attendance Management System</p>
         </div>
         {% if error %}
-        <div class="alert alert-danger py-2 small text-center">{{ error }}</div>
+        <div class="alert alert-danger py-2 small text-center rounded-3 shadow-sm">{{ error }}</div>
         {% endif %}
         <form method="POST">
             <div class="mb-3">
-                <label class="form-label fw-semibold">Username</label>
-                <input type="text" name="username" class="form-control" placeholder="Enter admin ID" required>
+                <label class="form-label fw-semibold text-secondary small">Username</label>
+                <input type="text" name="username" class="form-control py-2" placeholder="Enter admin ID" required>
             </div>
             <div class="mb-4">
-                <label class="form-label fw-semibold">Password</label>
-                <input type="password" name="password" class="form-control" placeholder="Enter password" required>
+                <label class="form-label fw-semibold text-secondary small">Password</label>
+                <input type="password" name="password" class="form-control py-2" placeholder="Enter password" required>
             </div>
-            <button type="submit" class="btn btn-primary w-100 py-2 fw-bold rounded-pill shadow-sm">Secure Login</button>
+            <button type="submit" class="btn btn-primary w-100 py-2.5 fw-bold rounded-pill shadow-sm">Secure Login</button>
         </form>
     </div>
 </body>
