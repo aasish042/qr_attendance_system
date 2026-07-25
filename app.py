@@ -40,7 +40,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'Aasish' and password == 'Aasish042':
+        if username == 'admin' and password == 'admin123':
             session['logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         else:
@@ -168,7 +168,6 @@ def mark_attendance():
         branch = request.form.get('branch')
         subject = request.form.get('subject')
         
-        # Real-time Live Exact Second Timestamp Capture
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
@@ -178,10 +177,20 @@ def mark_attendance():
         except Exception as e:
             return f"Error: {e}", 500
             
-        return """
+        # Naye token ke sath count update karne ki JavaScript script
+        return f"""
         <script>
-            let count = localStorage.getItem('device_attendance_count') || 0;
-            count = parseInt(count) + 1;
+            let activeToken = "{token}";
+            let storedToken = localStorage.getItem('device_token');
+            
+            let count = 0;
+            if (storedToken === activeToken) {{
+                count = parseInt(localStorage.getItem('device_attendance_count') || 0);
+            }} else {{
+                localStorage.setItem('device_token', activeToken);
+            }}
+            
+            count = count + 1;
             localStorage.setItem('device_attendance_count', count);
             window.location.href = '/success-page';
         </script>
