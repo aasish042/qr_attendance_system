@@ -17,7 +17,7 @@ app.secret_key = 'super_secret_professional_key'
 CSV_FILE = 'attendance.csv'
 PDF_FILE = 'attendance_report.pdf'
 
-# Session / Token storage for QR Expiry (2 Minutes = 120 seconds) - UPDATED
+# Session / Token storage for QR Expiry (2 Minutes = 120 seconds)
 active_session = {
     "token": None,
     "expires_at": 0
@@ -41,7 +41,7 @@ def admin_login():
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
-        if username == 'Aasish' and password == 'Aasish042':
+        if username == 'admin' and password == 'admin123':
             session['logged_in'] = True
             return redirect(url_for('admin_dashboard'))
         else:
@@ -58,7 +58,7 @@ def admin_dashboard():
     try:
         host_url = request.host_url.rstrip('/')
         
-        # Unique token aur 2 minute (120 seconds) ki expiry set karna - UPDATED
+        # Unique token aur 2 minute (120 seconds) ki expiry set karna
         token = str(int(time.time()))
         active_session["token"] = token
         active_session["expires_at"] = time.time() + 120  # 2 minutes valid
@@ -158,14 +158,15 @@ def logout():
 
 @app.route('/mark', methods=['GET', 'POST'])
 def mark_attendance():
-    # Token check for expiry validation - UPDATED
+    # Strict Token and Expiry Validation for BOTH GET and POST requests
     token = request.args.get('token') or request.form.get('token')
     current_time = time.time()
+    
     if not token or token != active_session["token"] or current_time > active_session["expires_at"]:
         return """
-        <div style='text-align:center; margin-top:20vh; font-family:sans-serif;'>
-            <h2 style='color:red;'>❌ Attendance Link Expired!</h2>
-            <p>Yeh QR code ya link expire ho chuka hai (2 minutes limit exceeded). Kripya naya QR scan karein.</p>
+        <div style='text-align:center; margin-top:20vh; font-family:sans-serif; padding: 20px;'>
+            <h2 style='color:#dc2626;'>❌ Attendance Link Expired!</h2>
+            <p style='color:#4b5563; font-size: 16px;'>Yeh QR code ya link expire ho chuka hai (2 minutes limit exceeded). Kripya naya QR scan karein.</p>
         </div>
         """, 403
 
@@ -174,8 +175,6 @@ def mark_attendance():
         roll = request.form.get('roll')
         branch = request.form.get('branch')
         subject = request.form.get('subject')
-        
-        # UPDATED: Live exact precise real-time timestamp generation on form submit
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
