@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, redirect, url_for, session, send_file
 import qrcode
+import io
+import base64
 import csv
 import os
 from datetime import datetime
@@ -8,9 +10,6 @@ app = Flask(__name__)
 app.secret_key = 'super_secret_professional_key'
 
 CSV_FILE = 'attendance.csv'
-
-if not os.path.exists('static'):
-    os.makedirs('static')
 
 def init_csv():
     if not os.path.isfile(CSV_FILE):
@@ -42,12 +41,17 @@ def admin_dashboard():
     if not session.get('logged_in'):
         return redirect(url_for('admin_login'))
     
+    qr_b64 = ""
+    target_url = ""
     try:
         host_url = request.host_url.rstrip('/')
         target_url = f"{host_url}/mark"
+        
+        # QR code ko memory mein generate karke Base64 string banana (No static folder dependency)
         img = qrcode.make(target_url)
-        qr_path = os.path.join('static', 'qr_code.png')
-        img.save(qr_path)
+        buffered = io.BytesIO()
+        img.save(buffered, format="PNG")
+        qr_b64 = base64.b64encode(buffered.getvalue()).decode('utf-8')
     except Exception as e:
         print(f"QR Error: {e}")
 
@@ -60,7 +64,7 @@ def admin_dashboard():
         except Exception as e:
             print(f"CSV Error: {e}")
             
-    return render_template('dashboard.html', records=records)
+    return render_template('dashboard.html', records=records, qr_b64=qr_b64, target_url=target_url)
 
 @app.route('/download-report')
 def download_report():
