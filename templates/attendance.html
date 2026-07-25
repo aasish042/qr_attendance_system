@@ -49,11 +49,11 @@
             
             <div class="mb-2">
                 <label class="form-label small fw-semibold">Full Name</label>
-                <input type="text" name="name" class="form-control py-2" placeholder="e.g. Aasish Bhati" required>
+                <input type="text" name="name" class="form-control py-2" placeholder="e.g. Rahul Sharma" required>
             </div>
             <div class="mb-2">
                 <label class="form-label small fw-semibold">Roll Number</label>
-                <input type="text" name="roll" class="form-control py-2" placeholder="e.g. 2400408***" required>
+                <input type="text" name="roll" class="form-control py-2" placeholder="e.g. 2105101" required>
             </div>
             <div class="mb-2">
                 <label class="form-label small fw-semibold">Branch / Class</label>
@@ -61,15 +61,25 @@
             </div>
             <div class="mb-3">
                 <label class="form-label small fw-semibold">Subject Name</label>
-                <input type="text" name="subject" class="form-control py-2" placeholder="e.g. Python" required>
+                <input type="text" name="subject" class="form-control py-2" placeholder="e.g. Data Structures" required>
             </div>
             <button type="submit" class="btn btn-success w-100 py-2.5 fw-bold rounded-pill shadow-sm">Submit Attendance</button>
         </form>
     </div>
 
-    <!-- Device Limit Check Script -->
+    <!-- Token-based Device Limit & Automatic Reset Script -->
     <script>
         window.addEventListener('DOMContentLoaded', (event) => {
+            const urlParams = new URLSearchParams(window.location.search);
+            let activeToken = urlParams.get('token') || "{{ token }}";
+            let storedToken = localStorage.getItem('device_token');
+            
+            // Agar admin ne naya link/QR generate kiya hai (token change hua hai), toh purana count zero kar do
+            if (storedToken !== activeToken) {
+                localStorage.setItem('device_token', activeToken);
+                localStorage.setItem('device_attendance_count', '0');
+            }
+
             let count = localStorage.getItem('device_attendance_count') || 0;
             if (parseInt(count) >= 2) {
                 document.getElementById('main-container').innerHTML = `
