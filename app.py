@@ -93,7 +93,6 @@ def download_report():
         return send_file(CSV_FILE, as_attachment=True)
     return "No records found!", 404
 
-# NEW: PDF Report Download Route added without changing any existing lines
 @app.route('/download-pdf')
 def download_pdf():
     if not session.get('logged_in'):
@@ -175,6 +174,8 @@ def mark_attendance():
         roll = request.form.get('roll')
         branch = request.form.get('branch')
         subject = request.form.get('subject')
+        
+        # UPDATED: Live exact precise real-time timestamp generation on form submit
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
