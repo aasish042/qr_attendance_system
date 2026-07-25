@@ -17,7 +17,6 @@ app.secret_key = 'super_secret_professional_key'
 CSV_FILE = 'attendance.csv'
 PDF_FILE = 'attendance_report.pdf'
 
-# Session / Token storage for QR Expiry (2 Minutes = 120 seconds)
 active_session = {
     "token": None,
     "expires_at": 0
@@ -57,16 +56,12 @@ def admin_dashboard():
     target_url = ""
     try:
         host_url = request.host_url.rstrip('/')
-        
-        # Unique token aur 2 minute (120 seconds) ki expiry set karna
         token = str(int(time.time()))
         active_session["token"] = token
         active_session["expires_at"] = time.time() + 120  # 2 minutes valid
         
-        # Link mein token pass hoga
         target_url = f"{host_url}/mark?token={token}"
         
-        # QR code ko memory mein generate karke Base64 string banana
         img = qrcode.make(target_url)
         buffered = io.BytesIO()
         img.save(buffered, format="PNG")
@@ -110,7 +105,6 @@ def download_pdf():
         if not data:
             return "No records found!", 404
 
-        # Generate PDF using ReportLab
         doc = SimpleDocTemplate(PDF_FILE, pagesize=letter, rightMargin=30, leftMargin=30, topMargin=30, bottomMargin=30)
         elements = []
         
@@ -127,7 +121,6 @@ def download_pdf():
         elements.append(Paragraph("Smart QR Attendance Report", title_style))
         elements.append(Spacer(1, 10))
         
-        # Format table data for ReportLab
         table_data = []
         for row in data:
             table_data.append([Paragraph(cell, styles['Normal']) for cell in row])
@@ -158,7 +151,6 @@ def logout():
 
 @app.route('/mark', methods=['GET', 'POST'])
 def mark_attendance():
-    # Strict Token and Expiry Validation for BOTH GET and POST requests
     token = request.args.get('token') or request.form.get('token')
     current_time = time.time()
     
@@ -176,7 +168,7 @@ def mark_attendance():
         branch = request.form.get('branch')
         subject = request.form.get('subject')
         
-        # Accurate Live Local Timestamp capturing
+        # Real-time Live Exact Second Timestamp Capture
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         try:
@@ -186,9 +178,20 @@ def mark_attendance():
         except Exception as e:
             return f"Error: {e}", 500
             
-        return render_template('success.html')
+        return """
+        <script>
+            let count = localStorage.getItem('device_attendance_count') || 0;
+            count = parseInt(count) + 1;
+            localStorage.setItem('device_attendance_count', count);
+            window.location.href = '/success-page';
+        </script>
+        """
     
     return render_template('attendance.html', token=token)
+
+@app.route('/success-page')
+def success_page():
+    return render_template('success.html')
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
