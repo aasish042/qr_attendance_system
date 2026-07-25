@@ -9,12 +9,12 @@ app.secret_key = 'super_secret_key_change_this'  # Session secure rakhne ke liye
 
 CSV_FILE = 'attendance.csv'
 
-# Agar CSV file nahi hai toh header ke sath bana lein
+# Agar CSV file nahi hai toh header ke sath bana lein (Subject ke sath)
 def init_csv():
     if not os.path.isfile(CSV_FILE):
         with open(CSV_FILE, mode='w', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow(['Timestamp', 'Name', 'Roll Number', 'Branch'])
+            writer.writerow(['Timestamp', 'Name', 'Roll Number', 'Branch', 'Subject'])
 
 init_csv()
 
@@ -80,12 +80,13 @@ def mark_attendance():
         name = request.form.get('name')
         roll = request.form.get('roll')
         branch = request.form.get('branch')
+        subject = request.form.get('subject')  # Subject yahan capture ho raha hai
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
-        # CSV mein data save karna
+        # CSV mein data save karna (Subject ke sath)
         with open(CSV_FILE, mode='a', newline='', encoding='utf-8') as f:
             writer = csv.writer(f)
-            writer.writerow([timestamp, name, roll, branch])
+            writer.writerow([timestamp, name, roll, branch, subject])
             
         return "<h2 style='text-align:center; color:green; margin-top:20vh;'>Attendance Successfully Recorded! Thank you.</h2>"
     
