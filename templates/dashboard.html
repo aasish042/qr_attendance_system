@@ -24,9 +24,31 @@
         .navbar {
             backdrop-filter: blur(10px);
         }
+        /* Perfect Professional Mobile Alignment */
         @media (max-width: 991.98px) {
+            .navbar {
+                padding: 10px 15px !important;
+            }
             .navbar-brand {
-                font-size: 0.9rem !important;
+                font-size: 0.95rem !important;
+            }
+            #live-clock {
+                font-size: 0.7rem !important;
+                padding: 3px 8px !important;
+                margin: 4px 0 !important;
+                width: 100%;
+                text-align: center;
+            }
+            .navbar .d-flex {
+                width: 100%;
+                justify-content: space-between;
+                margin-top: 5px;
+            }
+            .navbar-brand-container {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                align-items: center;
             }
         }
     </style>
@@ -74,15 +96,17 @@
     </script>
 </head>
 <body>
-    <nav class="navbar navbar-dark bg-dark px-3 px-md-4 shadow-lg bg-opacity-75 justify-content-between">
-        <span class="navbar-brand mb-0 h1 fw-bold fs-5"><i class="fa-solid fa-qrcode text-warning me-2"></i>Smart QR Dashboard</span>
-        
-        <!-- Live Running Clock Widget -->
-        <div id="live-clock" class="text-white small fw-semibold bg-secondary bg-opacity-25 px-3 py-1 rounded-pill border border-secondary">
-            Loading Clock...
+    <nav class="navbar navbar-dark bg-dark px-3 px-md-4 shadow-lg bg-opacity-75 flex-wrap justify-content-between align-items-center">
+        <div class="navbar-brand-container d-flex align-items-center justify-content-between w-lg-auto">
+            <span class="navbar-brand mb-0 h1 fw-bold fs-5"><i class="fa-solid fa-qrcode text-warning me-2"></i>Smart QR Dashboard</span>
+            
+            <!-- Live Running Clock Widget -->
+            <div id="live-clock" class="text-white small fw-semibold bg-secondary bg-opacity-25 px-3 py-1 rounded-pill border border-secondary my-1 my-lg-0">
+                Loading Clock...
+            </div>
         </div>
 
-        <div class="d-flex align-items-center">
+        <div class="d-flex align-items-center justify-content-end">
             <a href="/download-report" class="btn btn-success btn-sm fw-semibold me-2 shadow-sm"><i class="fa-solid fa-file-excel me-1"></i><span class="d-none d-sm-inline">Excel</span></a>
             <a href="/download-pdf" class="btn btn-danger btn-sm fw-semibold me-2 shadow-sm"><i class="fa-solid fa-file-pdf me-1"></i><span class="d-none d-sm-inline">PDF</span></a>
             <a href="/logout" class="btn btn-outline-light btn-sm fw-semibold shadow-sm"><i class="fa-solid fa-right-from-bracket me-1"></i> Logout</a>
